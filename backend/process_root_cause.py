@@ -1,3 +1,16 @@
+"""
+Root Cause (XAI) Narrative Extraction Script.
+
+This script identifies the primary internet narrative driving market volatility 
+for any given day. It sorts daily Reddit posts by score (upvotes) and extracts 
+the highest-rated post, including its text and URL. This data is fed into 
+the FastAPI backend to power the 'Explainable AI' (XAI) feature, proving 
+the algorithm's decisions are grounded in real social context.
+
+Input: 'your_raw_reddit_file.csv' (Raw 53k dataset)
+Output: 'root_cause_data.csv' (Top daily post text, score, and URL)
+"""
+
 import pandas as pd
 
 print("1. Loading raw Reddit data...")

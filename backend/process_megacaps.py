@@ -1,3 +1,16 @@
+"""
+Mega-Cap Sentiment Extraction & Isolation Script.
+
+This script processes raw Reddit data to calculate isolated, daily VADER 
+sentiment scores for the five most influential companies in the S&P 500:
+Apple ($AAPL), Tesla ($TSLA), Microsoft ($MSFT), Amazon ($AMZN), and Nvidia ($NVDA).
+It outputs a structured CSV used by the main FastAPI backend to power 
+the 'Mega-Cap Heatmap' UI component.
+
+Input: 'your_raw_reddit_file.csv' (Raw 53k dataset)
+Output: 'mega_cap_sentiment.csv' (Daily aggregated sentiment per stock)
+"""
+
 import pandas as pd
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer

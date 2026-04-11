@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -88,6 +89,27 @@ class ForecastRequest(BaseModel):
 
 @app.post("/forecast")
 def generate_forecast(req: ForecastRequest):
+    """
+    Simulates a 30-day forward S&P 500 trajectory based on current sentiment and hype.
+
+    This function utilizes three pre-trained Gradient Boosting models to predict 
+    the numerical change in price, generating lower, median, and upper bounds. 
+    It incorporates a 'Quantile Bouncer' logic to ensure confidence bounds do not cross, 
+    and simulates a 10% daily sentiment decay.
+
+    Args:
+        req (ForecastRequest): A Pydantic model containing:
+            - current_price (float): The starting S&P 500 index price.
+            - current_sentiment (float): The current VADER sentiment score (-1 to 1).
+            - current_hype_volume (float): Total volume of social media mentions.
+            - days_to_forecast (int, optional): Number of days to simulate. Defaults to 30.
+
+    Returns:
+        dict: A JSON-serializable dictionary containing:
+            - status (str): Success indicator.
+            - horizon_days (int): The number of days forecasted.
+            - forecast (list): An array of daily prediction dictionaries (day, lower_bound, likely_price, upper_bound).
+    """
     forecast_results = []
     simulated_price_median = req.current_price
     sim_sentiment = req.current_sentiment
@@ -132,6 +154,24 @@ def generate_forecast(req: ForecastRequest):
 
 @app.get("/simulation-data")
 def get_historical_simulation():
+    """
+    Retrieves the fully merged 2021 historical dataset with AI predictions and XAI data.
+
+    This function iterates through the pre-merged master dataframe, generating 
+    historical AI bounds for each day. It packages the actual S&P 500 price, 
+    the AI's quantile predictions, mega-cap sentiment, sector tug-of-war metrics, 
+    early warning Z-score anomalies, and root cause narratives into a single payload.
+
+    Returns:
+        dict: A JSON-serializable dictionary containing:
+            - status (str): Success indicator.
+            - total_days (int): The total number of historical days processed.
+            - simulation_data (list): A comprehensive array of daily market data dictionaries.
+
+    Raises:
+        HTTPException: A 500 Internal Server Error if the dataframe iteration 
+                       or model prediction fails.
+    """
     try:
         simulation_list = []
         

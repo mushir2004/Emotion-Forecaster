@@ -50,6 +50,9 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+.pytest_cache/
+__pycache__/
+venv/
 
 # Translations
 *.mo
@@ -189,7 +192,6 @@ yarn-error.log*
 .next/
 out/
 build/
-
 
 # OS Generated Files
 .DS_Store

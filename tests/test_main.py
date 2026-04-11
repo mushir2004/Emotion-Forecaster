@@ -1,5 +1,11 @@
+import sys
+import os
 from fastapi.testclient import TestClient
-from main import app  # Imports your FastAPI app
+
+# --- Tell Python to look one folder up to find main.py ---
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from main import app  
 
 # Create a fake client to test the API without starting the server
 client = TestClient(app)

@@ -1,3 +1,15 @@
+"""
+Sector Sentiment Extraction & Aggregation Script.
+
+This script processes raw Reddit data to calculate the daily average VADER 
+sentiment scores across four major market sectors: Tech, EV, Finance, and Meme Stocks.
+It uses keyword matching to categorize posts and outputs a structured CSV 
+used by the main FastAPI backend for the 'Sector Tug-of-War' UI component.
+
+Input: 'your_raw_reddit_file.csv' (Raw 53k dataset)
+Output: 'sector_sentiment.csv' (Daily aggregated sector scores)
+"""
+
 import pandas as pd
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
