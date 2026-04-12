@@ -23,7 +23,7 @@
 
   <br/>
 
-  [**→ View Demo**](#7-usage-guide) &nbsp;·&nbsp; [**→ Quick Start**](#6-installation) &nbsp;·&nbsp; [**→ Architecture**](#4-architecture)
+[**→ View Demo**](https://emotion-forecaster.vercel.app/) &nbsp;·&nbsp; [**→ Quick Start**](#installation) &nbsp;·&nbsp; [**→ Architecture**](#architecture)
 
   <br/>
 
@@ -47,39 +47,39 @@ H.I.V.E. is an **Explainable AI (XAI)** web application that transforms 53,000 r
 Traditional models price *fundamentals.* H.I.V.E. prices **hype.**
 
 
-**⏪ Time Machine** — Replay historical market crashes at 60fps, watching AI predictions unfold against real price action in real time.
+** Time Machine** — Replay historical market crashes at 60fps, watching AI predictions unfold against real price action in real time.
 
-**🔬 Root Cause XAI** — Click any data point to reveal the exact Reddit post — and its upvote count — that drove the model's prediction.
+** Root Cause XAI** — Click any data point to reveal the exact Reddit post — and its upvote count — that drove the model's prediction.
 
-**🧪 What-If Sandbox** — Adjust sentiment and hype sliders to instantly project a 30-day "Cone of Uncertainty" for any scenario.
+** What-If Sandbox** — Adjust sentiment and hype sliders to instantly project a 30-day "Cone of Uncertainty" for any scenario.
 
 ---
 
 ## Features
 
 <details>
-<summary><b>⚡ Early Warning Radar</b></summary>
+<summary><b> Early Warning Radar</b></summary>
 <br/>
 A live feed that continuously monitors statistical anomalies. When daily sentiment breaches a Z-Score of ≥ 2.0 or ≤ −2.0, H.I.V.E. triggers a real-time <code>MARKET PANIC</code> or <code>EXTREME EUPHORIA</code> alert — before price action confirms it.
 <br/><br/>
 </details>
 
 <details>
-<summary><b>📡 Dynamic Sector Heatmaps</b></summary>
+<summary><b> Dynamic Sector Heatmaps</b></summary>
 <br/>
 Animated radar charts that visualize live capital flow battles across <strong>Tech</strong>, <strong>EV</strong>, <strong>Finance</strong>, and <strong>Meme</strong> sectors. Watch sentiment shift in real-time as narratives dominate the feed.
 <br/><br/>
 </details>
 
 <details>
-<summary><b>🔀 Cross-Tab Branching</b></summary>
+<summary><b> Cross-Tab Branching</b></summary>
 <br/>
 Pause the historical timeline on any volatile day, click <strong>"Branch to Sandbox,"</strong> and the exact market conditions — price, sentiment score, hype volume — are instantly cloned into the forecasting engine. No manual re-entry.
 <br/><br/>
 </details>
 
 <details>
-<summary><b>🤖 Quantile Regression AI</b></summary>
+<summary><b> Quantile Regression AI</b></summary>
 <br/>
 Three concurrent GBM models generate a mathematically-bounded 30-day forecast. A custom <strong>"Quantile Bouncer"</strong> algorithm in FastAPI guarantees confidence intervals never cross — lower &lt; median &lt; upper, always.
 <br/><br/>
@@ -316,8 +316,8 @@ npm run dev
 
 **Current limitations**
 
-- 📦 **Static dataset** — models trained exclusively on the 2021 meme-stock era (53k posts). No live scraping yet.
-- 📉 **Linear sentiment decay** — the Sandbox uses a hardcoded 10% daily decay rate. Real hype dynamics are non-linear.
+-  **Static dataset** — models trained exclusively on the 2021 meme-stock era (53k posts). No live scraping yet.
+-  **Linear sentiment decay** — the Sandbox uses a hardcoded 10% daily decay rate. Real hype dynamics are non-linear.
 
 
 ---
