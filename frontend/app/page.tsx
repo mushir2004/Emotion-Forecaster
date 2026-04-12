@@ -152,8 +152,8 @@ export default function MarketForecasterDashboard() {
     }
   }, []);
 
-  const containerVariants = React.useMemo(() => ({ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } }), []);
-  const itemVariants = React.useMemo(() => ({ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 120, damping: 15 } } }), []);
+  const containerVariants: any = React.useMemo(() => ({ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } }), []);
+  const itemVariants: any = React.useMemo(() => ({ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 120, damping: 15 } } }), []);
 
   const CustomRadarTooltip = React.useCallback(({ active, payload }: any) => {
     if (active && payload && payload.length) {
