@@ -33,6 +33,11 @@
 
 </div>
 
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/8d5106bf-e2d7-4fae-9e38-1837428c9df9" controls="controls" width="800"></video>
+  <p>🎬 <strong>Prefer YouTube? <a href="https://youtu.be/pI42Ik4xjOg">Watch the demo here</a></strong></p>
+</div>
+
 ---
 
 ## What is H.I.V.E.?
