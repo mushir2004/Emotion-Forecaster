@@ -44,7 +44,7 @@ export default function MarketForecasterDashboard() {
     setChartKey(prev => prev + 1); // Triggers re-render animation
     try {
       setError(null);
-      const res = await fetch("https://hive-api.onrender.com/forecast", { // MAKE SURE THIS IS YOUR BACKEND URL
+      const res = await fetch("https://hive-backend-yp5d.onrender.com/forecast", { // MAKE SURE THIS IS YOUR BACKEND URL
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ current_price: price, current_sentiment: sentiment, current_hype_volume: hype, days_to_forecast: 30 }),
@@ -65,7 +65,7 @@ export default function MarketForecasterDashboard() {
     setIsSyncing(true);
     try {
       // If you hosted it on Render, change this URL!
-      const res = await fetch("http://127.0.0.1:8000/live-sync");
+      const res = await fetch("https://hive-backend-yp5d.onrender.com/live-sync");
       if (!res.ok) throw new Error("Failed to sync live data");
       const data = await res.json();
 
@@ -91,7 +91,7 @@ export default function MarketForecasterDashboard() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:8000/simulation-data"); // UPDATE TO LIVE URL IF NEEDED
+        const res = await fetch("https://hive-backend-yp5d.onrender.com/simulation-data"); // UPDATE TO LIVE URL IF NEEDED
         if (res.ok) {
           const data = await res.json();
           setHistoryData(data.simulation_data);
@@ -619,7 +619,22 @@ export default function MarketForecasterDashboard() {
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={darkMode ? "#2A2E37" : "#e2e8f0"} opacity={0.6} />
                           <XAxis dataKey="day" type="number" domain={[1, 30]} tickCount={6} tickFormatter={(t) => `Day ${t}`} tick={{ fill: darkMode ? "#64748b" : "#94a3b8", fontSize: 11 }} axisLine={false} tickLine={false} tickMargin={10} />
                           <YAxis domain={[yAxisMin, yAxisMax]} tick={{ fill: darkMode ? "#64748b" : "#94a3b8", fontSize: 11 }} tickFormatter={(t) => `$${t}`} axisLine={false} tickLine={false} />
-                          <RechartsTooltip contentStyle={{ backgroundColor: darkMode ? 'rgba(17, 19, 24, 0.9)' : 'rgba(255, 255, 255, 0.9)', backdropFilter: "blur(12px)", borderColor: darkMode ? '#2A2E37' : '#e2e8f0', borderRadius: "20px", color: darkMode ? '#fff' : '#000', padding: "16px" }} formatter={(value: any, name: string) => [Array.isArray(value) ? `[$${value[0]}, $${value[1]}]` : `$${value}`, name]} labelFormatter={(label) => `Day ${label}`} itemStyle={{ fontWeight: 600 }} />
+                          <RechartsTooltip
+                            contentStyle={{
+                              backgroundColor: darkMode ? 'rgba(17, 19, 24, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                              backdropFilter: "blur(12px)",
+                              borderColor: darkMode ? '#2A2E37' : '#e2e8f0',
+                              borderRadius: "20px",
+                              color: darkMode ? '#fff' : '#000',
+                              padding: "16px"
+                            }}
+                            formatter={(value: any, name: any) => [
+                              Array.isArray(value) ? `[$${value[0]}, $${value[1]}]` : `$${value}`,
+                              name
+                            ]}
+                            labelFormatter={(label) => `Day ${label}`}
+                            itemStyle={{ fontWeight: 600 }}
+                          />
                           <Legend verticalAlign="top" height={40} iconType="circle" formatter={(v) => <span className={`font-semibold ml-1 ${darkMode ? "text-slate-300" : "text-slate-700"}`}>{v}</span>} />
                           <Area type="monotone" dataKey="uncertainty" stroke="none" fill="url(#colorUncertainty)" name="90% Confidence Bounds" isAnimationActive={true} animationDuration={2000} animationEasing="ease-out" />
                           <Line type="monotone" dataKey="likely_price" stroke="#4361EE" filter={darkMode ? "url(#neonGlowBlue)" : ""} strokeWidth={5} dot={false} activeDot={{ r: 8, fill: "#4361EE", strokeWidth: 0 }} name="Median Forecast" isAnimationActive={true} animationDuration={2000} animationEasing="ease-out" />
