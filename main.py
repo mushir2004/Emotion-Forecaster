@@ -226,3 +226,143 @@ def get_historical_simulation():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process historical data: {str(e)}")
+    
+# ==========================================
+# 5. PHASE 2: LIVE MARKET SYNC (BETA)
+# ==========================================
+import sqlite3
+import yfinance as yf
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import pandas as pd
+
+# Initialize the VADER analyzer for live news
+analyzer = SentimentIntensityAnalyzer()
+
+def setup_live_database():
+    """Creates the SQLite database for the Live Sync feature."""
+    import os
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(current_dir, 'live_market.db')
+    
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    # Drop the old table so we can add our new Headline columns!
+    cursor.execute('DROP TABLE IF EXISTS recent_market_data')
+    
+    cursor.execute('''
+        CREATE TABLE recent_market_data (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT,
+            close_price REAL,
+            news_sentiment REAL,
+            top_headline TEXT,
+            headline_url TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+# Run this once when the server starts
+setup_live_database()
+
+@app.get("/live-sync")
+def sync_live_market():
+    """
+    Clears the database, fetches the last 30 days of live S&P 500 data and news,
+    extracts the root cause headline, stores it in SQLite, and generates a forecast.
+    """
+    try:
+        import os
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        db_path = os.path.join(current_dir, 'live_market.db')
+        
+        # 1. Connect to DB and clear old data
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM recent_market_data')
+        
+        # 2. Fetch Live Data from Yahoo Finance (Changed from 7d to 1mo)
+        sp500 = yf.Ticker("^GSPC")
+        hist = sp500.history(period="1mo")
+        
+        # Fetch live news for sentiment and XAI narrative
+        news = sp500.news
+        daily_sentiment = 0.0
+        top_headline = "No major market-moving narrative detected today."
+        headline_url = ""
+        max_abs_score = -1.0 # Used to find the most extreme headline
+
+        if news:
+            sentiments = []
+            for item in news:
+                title = item.get('title')
+                if not title and isinstance(item.get('content'), dict):
+                    title = item['content'].get('title')
+                
+                if title and isinstance(title, str):
+                    score = analyzer.polarity_scores(title)['compound']
+                    sentiments.append(score)
+                    
+                    # Find the headline with the most extreme emotion (Panic or Hype)
+                    if abs(score) > max_abs_score:
+                        max_abs_score = abs(score)
+                        top_headline = title
+                        headline_url = item.get('link', '')
+            
+            if len(sentiments) > 0:
+                daily_sentiment = sum(sentiments) / len(sentiments)
+
+        # 3. Store the 30-day data in SQLite
+        latest_price = 0.0
+        total_rows = len(hist)
+        current_row = 0
+
+        for date, row in hist.iterrows():
+            current_row += 1
+            date_str = date.strftime('%Y-%m-%d')
+            close_price = round(row['Close'], 2)
+            latest_price = close_price 
+            
+            # Fix: Only attach the news to TODAY (the last row), leave past days at 0
+            row_sentiment = daily_sentiment if current_row == total_rows else 0.0
+            row_headline = top_headline if current_row == total_rows else ""
+            row_url = headline_url if current_row == total_rows else ""
+            
+            cursor.execute('''
+                INSERT INTO recent_market_data (date, close_price, news_sentiment, top_headline, headline_url)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (date_str, close_price, row_sentiment, row_headline, row_url))
+            
+        conn.commit()
+        conn.close()
+
+        # 4. Generate the Live AI Forecast
+        features = pd.DataFrame([{
+            'Prev_Close': latest_price, 
+            'Prev_Sentiment': daily_sentiment, 
+            'Prev_Hype': 1000000 
+        }])
+        
+        live_lower = latest_price + lower_model.predict(features)[0]
+        live_median = latest_price + median_model.predict(features)[0]
+        live_upper = latest_price + upper_model.predict(features)[0]
+        
+        sorted_live = sorted([live_lower, live_median, live_upper])
+
+        return {
+            "status": "success",
+            "message": "Live Database Synced Successfully (30-Day Horizon)",
+            "latest_actual_price": latest_price,
+            "live_sentiment_score": round(daily_sentiment, 3),
+            "root_cause_headline": top_headline, # Tell Sharad to put this on the UI!
+            "root_cause_url": headline_url,
+            "live_forecast": {
+                "lower_bound": round(sorted_live[0], 2),
+                "target_price": round(sorted_live[1], 2),
+                "upper_bound": round(sorted_live[2], 2)
+            }
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Live Sync Failed: {str(e)}")
