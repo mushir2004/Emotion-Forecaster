@@ -281,6 +281,7 @@ def sync_live_market():
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.execute('DELETE FROM recent_market_data')
+        historical_chart_data = [{"date": row[0], "price": row[1]} for row in cursor.fetchall()]
         
         # 2. Fetch Live Data from Yahoo Finance (Changed from 7d to 1mo)
         sp500 = yf.Ticker("^GSPC")
@@ -357,6 +358,7 @@ def sync_live_market():
             "live_sentiment_score": round(daily_sentiment, 3),
             "root_cause_headline": top_headline, # Tell Sharad to put this on the UI!
             "root_cause_url": headline_url,
+            "historical_chart_data": historical_chart_data,
             "live_forecast": {
                 "lower_bound": round(sorted_live[0], 2),
                 "target_price": round(sorted_live[1], 2),
