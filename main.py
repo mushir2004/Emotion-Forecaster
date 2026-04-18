@@ -286,7 +286,7 @@ def sync_live_market():
         # 2. Fetch Live Data from Yahoo Finance (Changed from 7d to 1mo)
         sp500 = yf.Ticker("^GSPC")
         hist = sp500.history(period="1mo")
-        
+
         # Fetch live news for sentiment and XAI narrative
         news = sp500.news
         daily_sentiment = 0.0
