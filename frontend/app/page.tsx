@@ -153,6 +153,32 @@ export default function MarketForecasterDashboard() {
     });
   };
 
+  const branchToSandbox = () => {
+    const current = historyData[historyIndex];
+    if (current) {
+      setPrice(current.actual_price);
+      setSentiment(current.sentiment_score);
+
+      // Unlock the Sandbox UI using the historical data snapshot
+      setLiveSyncData({
+        latest_actual_price: current.actual_price,
+        live_sentiment_score: current.sentiment_score,
+        live_forecast: {
+          lower_bound: current.lower_bound || 0,
+          target_price: current.predicted_likely || 0,
+          upper_bound: current.upper_bound || 0
+        },
+        root_cause_headline: current.root_cause_text || "Historical Market Event",
+        root_cause_url: current.root_cause_url || "#"
+      });
+    }
+    setIsPlayingHistory(false);
+    setActiveTab("sandbox");
+
+    // Auto-run the matrix with the new historical numbers
+    setTimeout(() => runForecastSimulation(), 500);
+  };
+
   const yAxisMin = forecastData.length > 0 ? Math.floor(Math.min(...forecastData.map((d) => d.lower_bound)) * 0.98) : 3000;
   const yAxisMax = forecastData.length > 0 ? Math.ceil(Math.max(...forecastData.map((d) => d.upper_bound)) * 1.02) : 6000;
 
@@ -485,6 +511,9 @@ export default function MarketForecasterDashboard() {
                     </div>
                   </div>
                 </div>
+                <button onClick={branchToSandbox} className="w-full py-4 mt-2 rounded-2xl font-bold flex items-center justify-center bg-gradient-to-r from-[#7209B7] to-[#4361EE] text-white hover:shadow-[0_8px_20px_-6px_rgba(67,97,238,0.4)] hover:-translate-y-1 transition-all active:scale-95">
+                  <GitBranch className="w-5 h-5 mr-2" /> Branch to Sandbox
+                </button>
               </Card>
 
               <Card className="h-[400px] shrink-0 flex flex-col p-0 overflow-hidden border border-[#FF3366]/20">
@@ -580,7 +609,12 @@ export default function MarketForecasterDashboard() {
                 </Card>
 
                 {/* ROOT CAUSE XAI BANNER */}
-                <a href={liveSyncData.root_cause_url} target="_blank" rel="noopener noreferrer" className="block w-full">
+                <a
+                  href={(liveSyncData.root_cause_url && liveSyncData.root_cause_url.length > 4 && liveSyncData.root_cause_url !== "nan") ? (liveSyncData.root_cause_url.includes('http') ? liveSyncData.root_cause_url : `https://reddit.com${liveSyncData.root_cause_url}`) : "https://finance.yahoo.com"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full"
+                >
                   <Card className={`group cursor-pointer border ${darkMode ? "border-[#BF5CFF]/30 bg-gradient-to-r from-[#BF5CFF]/10 to-transparent" : "border-[#BF5CFF]/50 bg-gradient-to-r from-[#BF5CFF]/20 to-transparent"}`}>
                     <div className="flex items-start md:items-center justify-between">
                       <div>
